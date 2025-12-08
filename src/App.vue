@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import TreeNode from './components/TreeNode.vue'
+import TribeList from './components/TribeList.vue'
 import { Tribe } from 'nostr-tribes'
 import { ref, type Ref, onMounted,computed } from 'vue'
 import { nip19, SimplePool, type Event } from 'nostr-tools'
 import type { AddressPointer } from 'nostr-tools/nip19'
+import { tval } from './utils'
 
 let ready = ref(false)
 let pubkey = ref("")
@@ -80,14 +82,6 @@ async function waitForWindowNostr() {
     }
   }
 }
-function tval(event: Event, tagname: string): string | null {
-    let v = event.tags.filter((t) => t[0] === tagname)
-    if (v.length > 1)
-        throw Error("multiple values")
-    if (v.length == 1)
-        return v[0][1]
-    return null
-}
 
 let origin = computed(() => window.location.origin)
 let tribe_name = computed(() => tval(tribe_event.value!, 'name'))
@@ -101,7 +95,7 @@ let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/l
   <div class="outer">
     <div class="header">
       <img id="logo" src="/logo.png">
-      <div class="nostribe">nostribe</div>
+      <a href="/" class="nostribe">nostribe</a>
       <div v-if="error" class="error">{{ error }}</div>
       <div class="sep"></div>
       <div id="login"><button v-if="!pubkey" @click="onLogin">Login</button><span v-else>{{ tribe.name(pubkey) }}</span></div>
@@ -124,9 +118,7 @@ let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/l
       <div v-else>Loading members...</div>
     </div>
     <div v-else>
-      <br>Nostribe shows information on <a href="https://tribewiki.org/Tribe">Nostr Tribes</a>.
-      <br>Learn about tribes: what they are, why they exists, and how to create one on <a href="https://tribewiki.org/Tribe">tribewiki</a>.
-      <br><br>To view a tribe, enter the tribe event's address in the location bar: <code>{{ origin }}/naddr1...</code>
+      <TribeList />
     </div>
   </div>
 </template>
@@ -156,6 +148,12 @@ let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/l
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-weight: 600;
   margin-left: 15px;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.nostribe:hover {
+  color: #7B68EE;
 }
 .error {
   background-color: darkred;
