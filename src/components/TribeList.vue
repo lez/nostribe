@@ -12,6 +12,7 @@ interface TribeData {
   leader: string
   leaderName: string
   naddr: string
+  npub: string
 }
 
 const tribes = ref<TribeData[]>([])
@@ -23,35 +24,43 @@ const relays = [
   'wss://relay.nostr.hu'
 ]
 
-async function fetchLeaderName(pubkey: string): Promise<string> {
+function shortNpub(pubkey: string): string {
+  const npub = nip19.npubEncode(pubkey)
+  return npub.slice(0, 12) + '...'
+}
+
+async function fetchLeaderName(pubkey: string, tribeIndex: number) {
   try {
     let profiles = await pool.querySync(relays, { authors: [pubkey], kinds: [0] }, { maxWait: 3000 })
     if (profiles && profiles.length > 0) {
       let json = JSON.parse(profiles[0].content)
-      return json.name || json.display_name || pubkey.slice(0, 8) + '...'
+      const name = json.name || json.display_name
+      if (name) {
+        // Update the tribe's leader name in the reactive array
+        tribes.value[tribeIndex].leaderName = name
+      }
     }
   } catch (e) {
     console.error('Error fetching leader name:', e)
   }
-  return pubkey.slice(0, 8) + '...'
 }
 
 async function loadTribes() {
   loading.value = true
   try {
     // Query for tribe events (kind 32149)
-    const events = await pool.querySync(relays, { kinds: [32149], limit: 50 }, { timeout: 5000 })
+    const events = await pool.querySync(relays, { kinds: [32149], limit: 50 }, { maxWait: 5000 })
 
     if (events && events.length > 0) {
-      // Process each tribe event
-      const tribePromises = events.map(async (event) => {
+      // Process each tribe event synchronously first
+      tribes.value = events.map((event) => {
         const name = tval(event, 'name') || 'Unnamed Tribe'
         const description = tval(event, 'description') || 'No description'
         const image = tval(event, 'image') || '/logo.png'
         const dtag = tval(event, 'd') || ''
         const leader = event.pubkey
-        const leaderName = await fetchLeaderName(leader)
-
+        const npub = nip19.npubEncode(leader)
+        
         // Create naddr for the tribe
         const naddr = nip19.naddrEncode({
           kind: 32149,
@@ -59,19 +68,23 @@ async function loadTribes() {
           identifier: dtag,
           relays: relays
         })
-
+        
         return {
           event,
           name,
           description,
           image,
           leader,
-          leaderName,
-          naddr
+          leaderName: shortNpub(leader), // Start with short npub
+          naddr,
+          npub
         }
       })
-
-      tribes.value = await Promise.all(tribePromises)
+      
+      // Fetch leader profiles in the background
+      tribes.value.forEach((tribe, index) => {
+        fetchLeaderName(tribe.leader, index)
+      })
     }
   } catch (e) {
     console.error('Error loading tribes:', e)
@@ -81,7 +94,7 @@ async function loadTribes() {
 }
 
 function navigateToTribe(naddr: string) {
-  window.location.href = `/${naddr}`
+  window.location.assign(`/${naddr}`)
 }
 
 onMounted(() => {

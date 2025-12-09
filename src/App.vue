@@ -68,7 +68,10 @@ onMounted(init)
 
 async function onLogin() {
   pubkey.value = await window.nostr!.getPublicKey()
-  window.scrollTo(0, document.getElementById(pubkey.value)!.offsetTop)
+  let pk = document.getElementById(pubkey.value)
+  if (pk) {
+    window.scrollTo(0, pk.offsetTop)
+  }
 }
 
 async function waitForWindowNostr() {
@@ -98,7 +101,7 @@ let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/l
       <a href="/" class="nostribe">nostribe</a>
       <div v-if="error" class="error">{{ error }}</div>
       <div class="sep"></div>
-      <div id="login"><button v-if="!pubkey" @click="onLogin">Login</button><span v-else>{{ tribe.name(pubkey) }}</span></div>
+      <div v-if="tribe_event" id="login"><button v-if="!pubkey" @click="onLogin">Login</button><span v-else>{{ tribe.name(pubkey) }}</span></div>
     </div>
     <div v-if="tribe_event" class="tribe">
       <div class="tribe-info">
