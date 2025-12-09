@@ -6,6 +6,7 @@ import { ref, type Ref, onMounted,computed } from 'vue'
 import { nip19, SimplePool, type Event } from 'nostr-tools'
 import type { AddressPointer } from 'nostr-tools/nip19'
 import { tval } from './utils'
+import CreateTribe from './components/CreateTribe.vue'
 
 let ready = ref(false)
 let pubkey = ref("")
@@ -17,6 +18,7 @@ let relays: string[] = []
 let pool = new SimplePool()
 let tribe_event: Ref<Event|undefined> = ref()
 let names: Ref<{[key: string]: string}> = ref({})
+let page = ref("")
 
 async function fetchName(pubkey: string) {
   let r = await pool.querySync(relays, {authors: [pubkey], kinds: [0]})
@@ -29,10 +31,18 @@ async function fetchName(pubkey: string) {
 async function init() {
   await waitForWindowNostr()
   let stripped = window.location.pathname.slice(1)
-  if (!stripped) return
-  if (stripped.startsWith('nostr:')) {
-    window.location.assign('/'+stripped.slice('nostr:'.length))
+  // We don't need vue-router because this code is a substitute.
+  if (!stripped) {
+    page.value = 'main'
+    return
   }
+
+  if (stripped.startsWith('nostr:')) {
+    // This is a workaround for clients that put a nostr: before naddr, even in the middle of an url.
+    window.location.assign('/'+stripped.slice('nostr:'.length))
+    return
+  }
+
   if (stripped.startsWith('naddr1')) {
     let decoded = nip19.decode(stripped).data as AddressPointer
     if (decoded.kind !== 32149) {
@@ -50,19 +60,26 @@ async function init() {
       return
     }
     tribe_event.value = found[0]
+    page.value = 'tribe'
 
-  } else {
-    error.value = "The path should start with naddr1... and point to a tribe event"
+    tribe = new Tribe(`32149:${leader.value}:${dtag}`, relays)
+    console.log('syncing tribe')
+    await tribe.sync()
+    await tribe.sync_profiles()
+
+    console.log('tribe synced')
+    ready.value = true
+
     return
   }
 
-  tribe = new Tribe(`32149:${leader.value}:${dtag}`, relays)
-  console.log('syncing tribe')
-  await tribe.sync()
-  await tribe.sync_profiles()
+  if (stripped == "create") {
+    page.value = 'create'
+    return
+  }
 
-  console.log('tribe synced')
-  ready.value = true
+  error.value = "Invalid path"
+  return
 }
 onMounted(init)
 
@@ -101,9 +118,9 @@ let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/l
       <a href="/" class="nostribe">nostribe</a>
       <div v-if="error" class="error">{{ error }}</div>
       <div class="sep"></div>
-      <div v-if="tribe_event" id="login"><button v-if="!pubkey" @click="onLogin">Login</button><span v-else>{{ tribe.name(pubkey) }}</span></div>
+      <div v-if="page != 'main'" id="login"><button v-if="!pubkey" @click="onLogin">Login</button><span v-else>{{ tribe.name(pubkey) }}</span></div>
     </div>
-    <div v-if="tribe_event" class="tribe">
+    <div v-if="page == 'tribe'" class="tribe">
       <div class="tribe-info">
         <div class="tribe-header">
           <img :src="tribe_image" class="tribe-image">
@@ -120,8 +137,11 @@ let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/l
       <TreeNode v-if="ready" :pubkey="pubkey" :tribe="tribe" :head="leader" :level="0"/>
       <div v-else>Loading members...</div>
     </div>
-    <div v-else>
+    <div v-if="page == 'main'">
       <TribeList />
+    </div>
+    <div v-if="page == 'create'">
+      <CreateTribe />
     </div>
   </div>
 </template>

@@ -21,7 +21,7 @@ let name = computed(() => {
 
 let avatar = computed(() => {
   let entry = props.tribe.entry(props.head)
-  return entry.avatar || '/public/noavatar.png'
+  return entry.avatar || '/noavatar.png'
 })
 let nip05 = computed(() => {
   let entry = props.tribe.entry(props.head)
