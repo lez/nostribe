@@ -5,7 +5,7 @@ import { Tribe } from 'nostr-tribes'
 import { ref, type Ref, onMounted,computed } from 'vue'
 import { nip19, SimplePool, type Event } from 'nostr-tools'
 import type { AddressPointer } from 'nostr-tools/nip19'
-import { tval } from './utils'
+import { tval, tmval } from './utils'
 import CreateTribe from './components/CreateTribe.vue'
 
 let ready = ref(false)
@@ -49,7 +49,7 @@ async function init() {
       error.value = `Invalid event kind ${decoded.kind}. Expected kind is 32149`
       return
     }
-    relays = decoded.relays || ["wss://relay.nostribe.org"]
+    relays = decoded.relays || ['wss://relay.nostr.hu']
     leader.value = decoded.pubkey ; fetchName(decoded.pubkey)
     dtag = decoded.identifier
     console.log('decoded.relays', decoded.relays)
@@ -106,6 +106,7 @@ async function waitForWindowNostr() {
 let origin = computed(() => window.location.origin)
 let tribe_name = computed(() => tval(tribe_event.value!, 'name'))
 let tribe_description = computed(() => tval(tribe_event.value!, 'description'))
+let tribe_relays = computed(() => tmval(tribe_event.value!, 'relay').join(', '))
 let tribe_leader = computed(() => names.value[tribe_event.value!.pubkey] || tribe_event.value!.pubkey)
 let tribe_dtag = computed(() => tval(tribe_event.value!, 'd'))
 let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/logo.png')
@@ -129,7 +130,7 @@ let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/l
         </div>
         <br><span class="leader"><b>Tribe Leader:</b> {{ tribe_leader }}</span>
         <br><b>Description:</b> {{ tribe_description }}
-        <span v-if="relays"><br><b>Relays:</b> {{  relays.join(', ') }}</span>
+        <br><b>Relays:</b> {{  tribe_relays }}
         <br><b>Identifier:</b> {{ tribe_dtag }}
 
         <br><br><b>Members</b>

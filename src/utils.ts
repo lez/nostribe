@@ -15,3 +15,8 @@ export function tval(event: Event, tagname: string): string | null {
     return v[0][1]
   return null
 }
+
+export function tmval(event: Event, tagname: string): string[] {
+  let v = event.tags.filter((t) => t[0] === tagname)
+  return v.map(x => x[1])
+}
