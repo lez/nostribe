@@ -19,6 +19,25 @@ function normalizeRelay(relay: string){
   return 'wss://'+relay.trim()
 }
 
+function generateIdentifier(name: string): string {
+  // Normalize the string to decompose accented characters
+  let normalized = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  
+  // Convert to lowercase
+  normalized = normalized.toLowerCase()
+  
+  // Replace any non-alphanumeric character with a hyphen
+  normalized = normalized.replace(/[^a-z0-9]+/g, '-')
+  
+  // Remove leading/trailing hyphens
+  normalized = normalized.replace(/^-+|-+$/g, '')
+  
+  // Collapse multiple hyphens to a single hyphen
+  normalized = normalized.replace(/-+/g, '-')
+  
+  return normalized
+}
+
 async function createTribe() {
   error.value = ''
   success.value = false
@@ -40,8 +59,8 @@ async function createTribe() {
     // Get current user's public key
     pubkey = await window.nostr!.getPublicKey()
 
-    // Generate a unique identifier for the tribe (d tag)
-    const identifier = `tribe-${Date.now()}`
+    // Generate identifier from the tribe name
+    const identifier = generateIdentifier(name.value.trim())
 
     // Generate a list of relays
     const relayList = relays.value.split(',').map(normalizeRelay)
