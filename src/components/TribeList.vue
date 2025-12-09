@@ -104,11 +104,36 @@ onMounted(() => {
 
 <template>
   <div class="tribe-list-container">
-    <h2>Discover Tribes</h2>
-    <p class="subtitle">
-      Browse Nostr Tribes. Learn more on
-      <a href="https://tribewiki.org/Tribe" target="_blank">tribewiki</a>.
-    </p>
+    <div class="info-card">
+      <p class="info-description">
+        A <span class="hey">Tribe</span> is a sovereign <span class="hey">group</span> on Nostr, detached from relays.<br>
+        Tribes can be carried around between applications, just like your follow list.
+      </p>
+
+      <h3>Use Cases</h3>
+      <div class="use-cases">
+        <div class="use-case">
+          <h4>Tribe Relay</h4>
+          <p>A relay that stores events for tribe members, providing dedicated infrastructure for community content.</p>
+        </div>
+
+        <div class="use-case">
+          <h4>Collaborative Wiki</h4>
+          <p>Tribewiki allows edits for tribe members and their extended social graph.</p>
+        </div>
+
+        <div class="use-case">
+          <h4>Tribe Blossom Server</h4>
+          <p>A server that stores media files for tribe members. Enter a tribe, get access to multiple services.</p>
+        </div>
+      </div>
+
+      <p class="learn-more">
+        Learn more about tribes on <a href="https://tribewiki.org/Tribe" target="_blank">tribewiki</a>.
+      </p>
+    </div>
+
+    <h2 class="discover-title">Discover Tribes</h2>
 
     <div v-if="loading" class="loading">
       <p>Loading tribes...</p>
@@ -142,11 +167,123 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.hey {
+  font-size: 1.2em;
+  color: #7B68EE;
+  font-weight: bold;
+}
 .tribe-list-container {
   width: 100%;
   max-width: 1200px;
   padding: 20px;
   margin: 0 auto;
+}
+
+.info-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 20px rgba(123, 104, 238, 0.2);
+  border: 1px solid #333;
+}
+
+.info-card h2 {
+  font-size: 2em;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(90deg, #7B68EE, #9370DB);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.info-description {
+  font-size: 1.1em;
+  line-height: 1.7;
+  color: #ddd;
+  text-align: center;
+  margin-bottom: 32px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.info-card h3 {
+  font-size: 1.5em;
+  margin-bottom: 24px;
+  text-align: center;
+  color: #7B68EE;
+}
+
+.use-cases {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.use-case {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid rgba(123, 104, 238, 0.3);
+  transition: all 0.3s ease;
+}
+
+.use-case:hover {
+  transform: translateY(-4px);
+  border-color: #7B68EE;
+  box-shadow: 0 8px 24px rgba(123, 104, 238, 0.3);
+}
+
+.use-case-icon {
+  font-size: 2.5em;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.use-case h4 {
+  font-size: 1.2em;
+  margin-bottom: 12px;
+  margin-top: 0px;
+  text-align: center;
+  color: #fff;
+}
+
+.use-case p {
+  font-size: 0.95em;
+  line-height: 1.6;
+  color: #bbb;
+  text-align: center;
+  margin: 0;
+}
+
+.learn-more {
+  text-align: center;
+  color: #aaa;
+  font-size: 0.95em;
+  margin-top: 24px;
+  margin-bottom: 0;
+}
+
+.learn-more a {
+  color: #7B68EE;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.learn-more a:hover {
+  color: #9370DB;
+  text-decoration: underline;
+}
+
+.discover-title {
+  font-size: 2em;
+  margin-bottom: 30px;
+  text-align: center;
 }
 
 h2 {
