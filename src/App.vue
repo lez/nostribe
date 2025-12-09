@@ -118,6 +118,7 @@ let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/l
       <a href="/" class="nostribe">nostribe</a>
       <div v-if="error" class="error">{{ error }}</div>
       <div class="sep"></div>
+      <a v-if="page == 'main'" href="/create" class="create-tribe-btn"><button>Create Tribe</button></a>
       <div v-if="page != 'main'" id="login"><button v-if="!pubkey" @click="onLogin">Login</button><span v-else>{{ tribe.name(pubkey) }}</span></div>
     </div>
     <div v-if="page == 'tribe'" class="tribe">
@@ -219,5 +220,24 @@ let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/l
 }
 #login {
   margin-right: 15px;
+}
+.create-tribe-btn {
+  text-decoration: none;
+}
+.create-tribe-btn button {
+  background-color: #7B68EE;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+.create-tribe-btn button:hover {
+  background-color: #6A5ACD;
 }
 </style>
