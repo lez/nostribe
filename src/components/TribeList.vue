@@ -119,7 +119,7 @@ onMounted(() => {
 
         <div class="use-case">
           <h4>Collaborative Wiki</h4>
-          <p>Tribewiki allows edits for tribe members and their extended social graph.</p>
+          <p><a href="https://tribewiki.org">Tribewiki</a> allows edits for tribe members and their extended social graph.</p>
         </div>
 
         <div class="use-case">
