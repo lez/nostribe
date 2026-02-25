@@ -7,11 +7,11 @@ let props = defineProps<{ tribe: Tribe, head: string, pubkey: string, level: num
 
 async function onRevoke(pubkey: string) {
   console.log("Revoking", pubkey)
-  await props.tribe.stamp_pubkey(pubkey, "neutral")
+  await props.tribe.stamp_pubkey(pubkey, "0")
 }
 async function onBan(pubkey: string) {
   console.log("Banning", pubkey)
-  await props.tribe.stamp_pubkey(pubkey, "ban")
+  await props.tribe.stamp_pubkey(pubkey, "-")
 }
 
 let name = computed(() => {

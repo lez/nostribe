@@ -62,7 +62,7 @@ async function init() {
     tribe_event.value = found[0]
     page.value = 'tribe'
 
-    tribe = new Tribe(`32149:${leader.value}:${dtag}`, relays)
+    tribe = new Tribe(`32149:${leader.value}:${dtag}`, {relays})
     console.log('syncing tribe')
     await tribe.sync()
     await tribe.sync_profiles()
@@ -103,7 +103,7 @@ async function waitForWindowNostr() {
   }
 }
 
-let origin = computed(() => window.location.origin)
+// let origin = computed(() => window.location.origin)
 let tribe_name = computed(() => tval(tribe_event.value!, 'name'))
 let tribe_description = computed(() => tval(tribe_event.value!, 'description'))
 let tribe_relays = computed(() => tmval(tribe_event.value!, 'relay').join(', '))
