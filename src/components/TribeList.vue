@@ -60,7 +60,7 @@ async function loadTribes() {
         const dtag = tval(event, 'd') || ''
         const leader = event.pubkey
         const npub = nip19.npubEncode(leader)
-        
+
         // Create naddr for the tribe
         const naddr = nip19.naddrEncode({
           kind: 32149,
@@ -68,7 +68,7 @@ async function loadTribes() {
           identifier: dtag,
           relays: relays
         })
-        
+
         return {
           event,
           name,
@@ -80,7 +80,7 @@ async function loadTribes() {
           npub
         }
       })
-      
+
       // Fetch leader profiles in the background
       tribes.value.forEach((tribe, index) => {
         fetchLeaderName(tribe.leader, index)
@@ -106,8 +106,8 @@ onMounted(() => {
   <div class="tribe-list-container">
     <div class="info-card">
       <p class="info-description">
-        A <span class="hey">Tribe</span> is a sovereign <span class="hey">group</span> on Nostr, detached from relays.<br>
-        Tribes can be carried around between applications, just like your follow list.
+        <span class="hey">Tribes</span> are sovereign <span class="hey">groups</span> on Nostr, detached from relays.<br>
+        Tribes can be used in multiple applications, relays or such.
       </p>
 
       <h3>Use Cases</h3>

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "nostr-tools": "^2.15.0",
-    "nostr-tribes": "^0.1.2",
+    "nostr-tribes": "^0.3.1",
     "vue": "^3.5.13"
   },
   "devDependencies": {
