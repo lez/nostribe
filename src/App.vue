@@ -14,7 +14,7 @@ let tribe: Tribe
 let error = ref("")
 var leader = ref("")
 var dtag = ""
-let relays: string[] = []
+let relays: string[] = []  // home of the tribe descriptor event
 let pool = new SimplePool()
 let tribe_event: Ref<Event|undefined> = ref()
 let names: Ref<{[key: string]: string}> = ref({})
@@ -110,6 +110,36 @@ let tribe_relays = computed(() => tmval(tribe_event.value!, 'relay').join(', '))
 let tribe_leader = computed(() => names.value[tribe_event.value!.pubkey] || tribe_event.value!.pubkey)
 let tribe_dtag = computed(() => tval(tribe_event.value!, 'd'))
 let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/logo.png')
+let newMemberNpub = ref("")
+let addMemberError = ref("")
+let addMemberSuccess = ref("")
+
+async function addMember() {
+  addMemberError.value = ""
+  addMemberSuccess.value = ""
+  
+  if (!newMemberNpub.value) {
+    addMemberError.value = "Please enter an npub"
+    return
+  }
+
+  try {
+    // Decode the npub to get the pubkey
+    let decoded = nip19.decode(newMemberNpub.value)
+    if (decoded.type !== 'npub') {
+      addMemberError.value = "Invalid npub format"
+      return
+    }
+    let memberPubkey = decoded.data as string
+
+    await tribe.stamp_pubkey(memberPubkey)
+    
+    addMemberSuccess.value = "Member added successfully!"
+    newMemberNpub.value = ""
+  } catch (e) {
+    addMemberError.value = "Failed to add member: " + (e as Error).message
+  }
+}
 </script>
 
 <template>
@@ -132,6 +162,21 @@ let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/l
         <br><b>Description:</b> {{ tribe_description }}
         <br><b>Relays:</b> {{  tribe_relays }}
         <br><b>Identifier:</b> {{ tribe_dtag }}
+
+        <div v-if="pubkey" class="add-member-section">
+          <br><br><b>Add Member</b>
+          <div class="add-member-form">
+            <input 
+              v-model="newMemberNpub" 
+              type="text" 
+              placeholder="Enter npub to add as member"
+              class="npub-input"
+            />
+            <button @click="addMember" class="add-member-btn">Add</button>
+          </div>
+          <div v-if="addMemberError" class="add-member-error">{{ addMemberError }}</div>
+          <div v-if="addMemberSuccess" class="add-member-success">{{ addMemberSuccess }}</div>
+        </div>
 
         <br><br><b>Members</b>
       </div>
@@ -240,5 +285,51 @@ let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/l
 }
 .create-tribe-btn button:hover {
   background-color: #6A5ACD;
+}
+
+.add-member-section {
+  margin-top: 10px;
+}
+
+.add-member-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding-right: 10px;
+}
+
+.npub-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-member-btn {
+  background-color: #7B68EE;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1em;
+  transition: background-color 0.2s ease;
+}
+
+.add-member-btn:hover {
+  background-color: #6A5ACD;
+}
+
+.add-member-error {
+  color: #ff4444;
+  margin-top: 8px;
+  font-size: 0.9em;
+}
+
+.add-member-success {
+  color: #00c851;
+  margin-top: 8px;
+  font-size: 0.9em;
 }
 </style>
