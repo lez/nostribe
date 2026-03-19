@@ -3,7 +3,7 @@ import TreeNode from './components/TreeNode.vue'
 import TribeList from './components/TribeList.vue'
 import { Tribe } from 'nostr-tribes'
 import { ref, type Ref, onMounted,computed } from 'vue'
-import { nip19, SimplePool, type Event } from 'nostr-tools'
+import { nip19, nip05, SimplePool, type Event } from 'nostr-tools'
 import type { AddressPointer } from 'nostr-tools/nip19'
 import { tval, tmval } from './utils'
 import CreateTribe from './components/CreateTribe.vue'
@@ -125,18 +125,34 @@ async function addMember() {
   addMemberSuccess.value = ""
   
   if (!newMemberNpub.value) {
-    addMemberError.value = "Please enter an npub"
+    addMemberError.value = "Please enter an npub or nip05 address"
     return
   }
 
   try {
-    // Decode the npub to get the pubkey
-    let decoded = nip19.decode(newMemberNpub.value)
-    if (decoded.type !== 'npub') {
-      addMemberError.value = "Invalid npub format"
-      return
+    let memberPubkey: string
+
+    // Try to decode as npub first
+    try {
+      let decoded = nip19.decode(newMemberNpub.value)
+      if (decoded.type !== 'npub') {
+        addMemberError.value = decoded.type + " is not supported"
+        return
+      }
+      memberPubkey = decoded.data as string
+    } catch (e) {
+      // If npub decoding fails, try to parse as nip05
+      const nip05Address = newMemberNpub.value.trim()
+
+      // Query the nip05 address to get the pubkey
+      let profile = await nip05.queryProfile(nip05Address)
+      if (!profile) {
+        addMemberError.value = "Could not find a profile for this nip05 address"
+        return
+      }
+
+      memberPubkey = profile.pubkey
     }
-    let memberPubkey = decoded.data as string
 
     await tribe.stamp_pubkey(memberPubkey)
     
@@ -175,7 +191,7 @@ async function addMember() {
             <input
               v-model="newMemberNpub"
               type="text"
-              placeholder="Enter npub to add as member"
+              placeholder="Enter npub or nip05 address"
               class="npub-input"
             />
             <button @click="addMember" class="add-member-btn">Add</button>
