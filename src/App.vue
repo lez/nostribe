@@ -110,9 +110,15 @@ let tribe_relays = computed(() => tmval(tribe_event.value!, 'relay').join(', '))
 let tribe_leader = computed(() => names.value[tribe_event.value!.pubkey] || tribe_event.value!.pubkey)
 let tribe_dtag = computed(() => tval(tribe_event.value!, 'd'))
 let tribe_image = computed(() => tval(tribe_event.value!, 'image') || '/public/logo.png')
+let user_is_member = computed(() => tribe.member(pubkey.value))
+
 let newMemberNpub = ref("")
 let addMemberError = ref("")
 let addMemberSuccess = ref("")
+
+async function requestMembership() {
+  alert("To be implemented soon!")
+}
 
 async function addMember() {
   addMemberError.value = ""
@@ -163,12 +169,12 @@ async function addMember() {
         <br><b>Relays:</b> {{  tribe_relays }}
         <br><b>Identifier:</b> {{ tribe_dtag }}
 
-        <div v-if="pubkey" class="add-member-section">
+        <div v-if="pubkey && user_is_member" class="add-member-section">
           <br><br><b>Add Member</b>
           <div class="add-member-form">
-            <input 
-              v-model="newMemberNpub" 
-              type="text" 
+            <input
+              v-model="newMemberNpub"
+              type="text"
               placeholder="Enter npub to add as member"
               class="npub-input"
             />
@@ -176,6 +182,10 @@ async function addMember() {
           </div>
           <div v-if="addMemberError" class="add-member-error">{{ addMemberError }}</div>
           <div v-if="addMemberSuccess" class="add-member-success">{{ addMemberSuccess }}</div>
+        </div>
+        <div v-else-if="pubkey">
+          <br><br><b>You are not a member.</b><br>
+          <button @click="requestMembership" class="request-membership-btn">Request Membership</button>
         </div>
 
         <br><br><b>Members</b>
@@ -306,7 +316,7 @@ async function addMember() {
   border-radius: 4px;
 }
 
-.add-member-btn {
+.add-member-btn, .request-membership-btn {
   background-color: #7B68EE;
   border: none;
   color: white;
