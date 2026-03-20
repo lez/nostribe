@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "nostr-tribes": "^0.3.2",
+    "nostr-tribes": "^0.4.0",
     "vue": "^3.5.13"
   },
   "devDependencies": {
