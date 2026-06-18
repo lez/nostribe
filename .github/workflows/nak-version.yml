@@ -3,7 +3,7 @@ run-name: We are testing Budabit
 on: [push]
 jobs:
   check-nak-version:
-    runs-on: ubuntu-latest
+#    runs-on: ubuntu-latest
     steps:
       - run: nak --version
 
