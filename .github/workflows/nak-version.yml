@@ -3,7 +3,9 @@ run-name: We are testing Budabit
 on: [push]
 jobs:
   check-nak-version:
-#    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
+      - run: echo helloka
+      - run: ls -la
       - run: nak --version
 
