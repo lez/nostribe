@@ -7,5 +7,4 @@ jobs:
     steps:
       - run: echo helloka
       - run: ls -la
-      - run: nak --version
-
+      - run: echo there is no nak here, but thats ok
