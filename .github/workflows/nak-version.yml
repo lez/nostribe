@@ -10,7 +10,13 @@ jobs:
       - run: echo there is no nak here, but thats ok
   ensure-everything-is-ok:
     runs-on: ubuntu-latest
+    needs: check-nak-version
     steps:
       - run: echo every fucking thing
       - run: echo is gonna be alright
       - run: yes | head
+
+  this-is-something-else:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo yes it is something else indeed
