@@ -15,7 +15,6 @@ jobs:
       - run: echo every fucking thing
       - run: echo is gonna be alright
       - run: yes | head
-
   this-is-something-else:
     runs-on: ubuntu-latest
     steps:
