@@ -15,8 +15,8 @@ jobs:
       - run: echo every fucking thing
       - run: echo is gonna be alright
       - run: yes | head
-  this-is-something-else:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo yes it is something else indeed
-      - run: echo something else, yes
+#  this-is-something-else:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - run: echo yes it is something else indeed
+#      - run: echo something else, yes
