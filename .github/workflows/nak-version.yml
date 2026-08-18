@@ -8,3 +8,9 @@ jobs:
       - run: echo helloka
       - run: ls -la
       - run: echo there is no nak here, but thats ok
+  ensure-everything-is-ok:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo every fucking thing
+      - run: echo is gonna be alright
+      - run: yes | head
